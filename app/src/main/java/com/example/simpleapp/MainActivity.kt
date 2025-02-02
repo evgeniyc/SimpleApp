@@ -6,10 +6,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Today
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,10 +29,9 @@ import com.example.simpleapp.ui.theme.SimpleAppTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
-        // Тег для логов
         val TAG = "MainActivity"
+        Log.d(TAG, "onCreate called")
+        enableEdgeToEdge()
 
         // Создаем список категорий
         val categories = listOf(
@@ -32,13 +39,15 @@ class MainActivity : ComponentActivity() {
                 id = 1,
                 name = "Времена года",
                 description = "Слова, связанные с временами года",
-                words = listOf("Весна", "Лето", "Осень", "Зима")
+                words = listOf("Весна", "Лето", "Осень", "Зима"),
+                icon = Icons.Filled.DateRange // Добавляем иконку
             ),
             Category(
                 id = 2,
                 name = "Приветствия",
                 description = "Слова, связанные с приветствиями",
-                words = listOf("Привет", "Здравствуйте", "Добрый день", "Добрый вечер")
+                words = listOf("Привет", "Здравствуйте", "Добрый день", "Добрый вечер"),
+                icon = Icons.Filled.Face // Добавляем иконку
             ),
             Category(
                 id = 3,
@@ -52,14 +61,13 @@ class MainActivity : ComponentActivity() {
                     "Пятница",
                     "Суббота",
                     "Воскресенье"
-                )
+                ),
+                icon = Icons.Filled.Today // Добавляем иконку
             )
         )
 
-        // Логируем создание списка категорий
-        Log.d(TAG, "Создан список категорий: $categories")
-
         setContent {
+            Log.d(TAG, "setContent called")
             SimpleAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     CategoryList(categories = categories, modifier = Modifier.padding(innerPadding))
@@ -71,18 +79,41 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CategoryItem(category: Category) {
-    Column(
-        modifier = Modifier.padding(8.dp)
+    Log.d("CategoryItem", "CategoryItem called for ${category.name}")
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
     ) {
-        Text(text = category.name, style = MaterialTheme.typography.headlineSmall)
-        Text(text = category.description, style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Слов: ${category.words.size}", style = MaterialTheme.typography.bodySmall)
+        Row(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(imageVector = category.icon, contentDescription = category.name)
+            Column(
+                modifier = Modifier.padding(start = 16.dp) // Добавляем отступ слева
+            ) {
+                Text(text = category.name, style = MaterialTheme.typography.headlineSmall)
+                Text(text = category.description, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Слов: ${category.words.size}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
     }
 }
+
 
 @Composable
 fun CategoryList(categories: List<Category>, modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier) {
+        item { // Добавляем заголовок как отдельный элемент списка
+            Text(
+                text = "Список категорий",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
         items(categories) { category ->
             CategoryItem(category = category)
         }
